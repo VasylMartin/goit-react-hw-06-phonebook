@@ -1,11 +1,18 @@
-import React from "react";
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { setFilter, getFilter } from '../../redux/contactSlice';
 
-export const FormFiler = ({value, onChange}) => {
+export const FormFiler = () => {
+    const filter = useSelector(getFilter);
+    const dispatch = useDispatch();
+
+    const onChange = e => {
+        dispatch(setFilter(e.currentTarget.value));
+};
+
     return (
         <label htmlFor="filter">Find contacts by Name
                 <input
-                    value={value}
+                    value={filter}
                     onChange={onChange}
                     type="text"
                     name="filter"
@@ -13,8 +20,3 @@ export const FormFiler = ({value, onChange}) => {
                 </label>
     )
 }
-
-FormFiler.propTypes = {
-    value: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-};

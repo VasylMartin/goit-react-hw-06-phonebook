@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import { nanoid } from 'nanoid';
-
+import { add, getContacts } from '../../redux/contactSlice';
 
 export default function Form({onSubmit}) {
     const [name, setName] = useState('')
@@ -9,6 +9,13 @@ export default function Form({onSubmit}) {
 
     const nameInputId = nanoid();
     const phoneInputId = nanoid();
+
+    const dispatch = useDispatch();
+    const contacts = useSelector(getContacts);
+
+    const pushDataToArr = contact => {
+        dispatch(add(contact));
+    };
 
     const handleInputsChange = e => {
         switch (e.currentTarget.name) {
@@ -25,10 +32,27 @@ export default function Form({onSubmit}) {
         }
     }
 
+    const formSubmitHandler = data => {
+        //  check the same contact
+        const normalizedName = data.name.toLowerCase();
+    
+        const isTheSame = contacts.find(
+            contact => contact.name.toLowerCase() === normalizedName
+        );
+    
+        if (isTheSame) {
+            alert(`${isTheSame.name} is already in contacts`);
+            return;
+        }
+    
+        data.id = nanoid();
+        pushDataToArr(data);
+};
+
     const handleSubmit = e => {
         e.preventDefault()
 
-        onSubmit({name, number})
+        formSubmitHandler({name, number})
 
         resetForm()
     }
@@ -69,7 +93,3 @@ export default function Form({onSubmit}) {
             </form>
         )
 }
-
-Form.propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-};
